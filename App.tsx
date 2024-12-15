@@ -8,6 +8,8 @@ import RecipePage from "./Screens/RecipePage";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import AboutPage from "./Screens/AboutPage";
 import ContactScreen from "./Screens/ContactScreen";
+import { Provider } from "react-redux";
+import { store } from "./Redux/store";
 
 const Stack = createStackNavigator();
 const Bottom = createBottomTabNavigator();
@@ -26,39 +28,54 @@ const HomeStack = () => {
   );
 };
 
+const FavoriteStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="FavoritesHomeScreen"
+        component={AboutPage}
+        options={{ title: "Favorites" }}
+      />
+      <Stack.Screen name="RecipePage" component={RecipePage} />
+    </Stack.Navigator>
+  );
+};
+
 export default function App() {
   return (
-    <NavigationContainer>
-      <Bottom.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: "black",
-        }}
-        initialRouteName="Home"
-      >
-        <Bottom.Screen
-          name="Contact"
-          component={ContactScreen}
-          options={{
-            tabBarIcon: () => <Icon name="inbox" size={20} />,
+    <Provider store={store}>
+      <NavigationContainer>
+        <Bottom.Navigator
+          screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: "black",
           }}
-        />
-        <Bottom.Screen
-          name="Home"
-          component={HomeStack}
-          options={{
-            tabBarIcon: () => <Icon name="home" size={20} />,
-          }}
-        />
-        <Bottom.Screen
-          name="About"
-          component={AboutPage}
-          options={{
-            tabBarIcon: () => <Icon name="info" size={20} />,
-          }}
-        />
-      </Bottom.Navigator>
-    </NavigationContainer>
+          initialRouteName="Home"
+        >
+          <Bottom.Screen
+            name="Contact"
+            component={ContactScreen}
+            options={{
+              tabBarIcon: () => <Icon name="inbox" size={20} />,
+            }}
+          />
+          <Bottom.Screen
+            name="Home"
+            component={HomeStack}
+            options={{
+              tabBarIcon: () => <Icon name="home" size={20} />,
+            }}
+          />
+          <Bottom.Screen
+            name="Favorites"
+            component={FavoriteStack}
+            options={{
+              tabBarIcon: () => <Icon name="star" size={20} />,
+            }}
+          />
+        </Bottom.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

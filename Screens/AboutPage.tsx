@@ -1,22 +1,36 @@
 import { SafeAreaView, StyleSheet, Text, View, ScrollView } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import RecipeBox from "../Components/RecipeBox";
+import { useEffect } from "react";
+import MealData from "../Data/MealData";
 
 const AboutPage = () => {
+  const favoriteDishes = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+
+  const filteredDishes = MealData.flatMap((region) =>
+    region.dishes.filter((dish) => favoriteDishes.includes(dish.name))
+  );
+
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.aboutText}>About Us</Text>
-        <Text style={styles.textContainer}>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Numquam,
-          dicta? Non qui vel vero molestias enim et quaerat itaque, quia,
-          eveniet nihil saepe recusandae voluptas labore velit perspiciatis
-          corrupti autem! Lorem ipsum dolor sit amet, consectetur adipisicing
-          elit. Perferendis animi inventore sint, libero, odio exercitationem at
-          ex natus magni adipisci esse autem distinctio quo. Eaque sit provident
-          commodi molestiae quis?Lorem ipsum dolor sit amet, consectetur
-          adipisicing elit. Atque, totam? Dolore enim, ullam nihil impedit
-          facilis dolorum incidunt qui vero. Commodi blanditiis non corrupti!
-          Consequuntur, dignissimos incidunt. Minima, doloribus aperiam?
-        </Text>
+      <ScrollView>
+        {filteredDishes.length > 0 ? (
+          filteredDishes.map((item, index) => (
+            <RecipeBox
+              key={index}
+              difficulty={item.difficulty}
+              time_to_cook={item.time_to_cook}
+              title={item.name}
+              ingredients={item.ingredients}
+              instructions={item.cooking_instructions}
+            />
+          ))
+        ) : (
+          <Text style={styles.noText}>No favorite dishes available</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -29,18 +43,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  scrollContent: {
-    alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-  },
-  aboutText: {
-    fontSize: 35,
+  noText: {
+    textAlign: "center",
+    marginVertical: 35,
+    fontSize: 25,
     fontWeight: "bold",
-    marginVertical: 15,
-  },
-  textContainer: {
-    fontSize: 20,
-    textAlign: "justify",
   },
 });

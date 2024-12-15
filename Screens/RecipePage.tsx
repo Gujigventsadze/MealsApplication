@@ -1,7 +1,11 @@
-import { useEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Pressable, ScrollView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import { addFavorite, removeFavorite } from "../Redux/FavoriteSlice";
 
 interface RecipePageProps {
   route: any;
@@ -11,9 +15,33 @@ interface RecipePageProps {
 const RecipePage: React.FC<RecipePageProps> = ({ route, navigation }) => {
   const { allData } = route.params;
 
-  useEffect(() => {
-    navigation.setOptions({ title: allData.title });
-  }, [navigation]);
+  const dispatch = useDispatch();
+  const selector = useSelector((state: RootState) => state.favorites.favorites);
+
+  const isFavorite = selector.includes(allData.title);
+
+  const handleClick = () => {
+    if (isFavorite) {
+      dispatch(removeFavorite(allData.title));
+    } else {
+      dispatch(addFavorite(allData.title));
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: allData.title,
+      headerRight: () => (
+        <Pressable onPress={handleClick}>
+          <Ionicons
+            name={isFavorite ? "star" : "star-outline"}
+            size={30}
+            style={{ marginRight: 20 }}
+          />
+        </Pressable>
+      ),
+    });
+  }, [navigation, isFavorite, allData, dispatch]);
 
   return (
     <ScrollView style={styles.mainContainer}>
